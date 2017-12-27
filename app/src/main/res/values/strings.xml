@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BusTrack</string>
+    <string name="gps_dialog_title">GPS...</string>
+    <string name="gps_enable_message"><![CDATA[GPS is not enable, Please enable it in next window.<br>]]></string>
 </resources>
