@@ -2,4 +2,33 @@
     <string name="app_name">BusTrack</string>
     <string name="gps_dialog_title">GPS...</string>
     <string name="gps_enable_message"><![CDATA[GPS is not enable, Please enable it in next window.<br>]]></string>
+    <string name="username">Username/Email</string>
+    <string name="password">Password</string>
+    <string name="toggle_login_signin">New Here? Sign up</string>
+    <string name="login">Login</string>
+    <string name="new_here_question"><![CDATA[New Here? Sign Up >]]></string>
+    <string name="right_arrow">Right Arrow</string>
+    <string name="error_email_required">Email Required</string>
+    <string name="error_password_required">password can not be empty</string>
+
+    <string-array name="choose">
+        <item>Driver</item>
+        <item>Student</item>
+    </string-array>
+    <string name="title_activity_login2">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="register">Register</string>
+    <string name="title_activity_driver_maps">Map</string>
 </resources>

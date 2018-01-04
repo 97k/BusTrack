@@ -16,7 +16,6 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-import java.security.spec.ECField;
 
 /**
  * Created by aditya on 12/27/17.
@@ -158,7 +157,7 @@ public class GpsTracker extends Service implements LocationListener {
         dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();)
+                dialogInterface.cancel();
             }
         });
         dialog.show();
