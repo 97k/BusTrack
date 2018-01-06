@@ -31,4 +31,10 @@
     </string>
     <string name="register">Register</string>
     <string name="title_activity_driver_maps">Map</string>
+    <string name="title_activity_student_maps">Map</string>
+    <string name="get_eta">Get ETA</string>
+    <string name="ReadyToGo">Ready to go</string>
+    <string name="logout">Logout</string>
+    <string name="request_wait">Request Wait</string>
+    <string name="isDriver">is_driver</string>
 </resources>

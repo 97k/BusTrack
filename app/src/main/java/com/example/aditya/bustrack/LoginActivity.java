@@ -2,6 +2,7 @@ package com.example.aditya.bustrack;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,7 +20,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -83,9 +83,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    String ut = userType.getSelectedItem().toString();
-                    if (ut.equals("Driver")) {
+                    Boolean ut = getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.isDriver), false);
+                    if (ut) {
                         Intent intent = new Intent(LoginActivity.this, DriverMapsActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else{
+                        Intent intent = new Intent(LoginActivity.this, StudentMapsActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -109,6 +113,16 @@ public class LoginActivity extends AppCompatActivity {
                 passwordInput = (TextInputEditText) passwordWrapper.getEditText();
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
+
+                /**
+                 * Saving detail of the user in a shared preference file i.e he is driver or not
+                 * and will check from that shared pref while logging in!
+                 */
+                if (userType.getSelectedItem().toString().equals("Driver")){
+                    SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
+                    editor.putBoolean(getString(R.string.isDriver), true);
+                    editor.commit();
+                }
 
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
