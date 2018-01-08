@@ -1,30 +1,27 @@
 package com.example.aditya.bustrack;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toolbar;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryDataEventListener;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -37,6 +34,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -52,6 +51,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
     Button mLogout;
     @BindView(R.id.request_wait)
     Button mRequestWait;
+    @BindView(R.id.locate_bus)
+    Button mLocateNearestBus;
 
     public static final String LOG_TAG = StudentMapsActivity.class.getSimpleName();
     private static final int RC_PER = 2;
@@ -60,7 +61,12 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
     private GoogleApiClient mGoogleApiClient;
     private Location mLastKnownLocation;
     private LatLng etaLocation;
+    private LatLng studentLocation;
     private LocationRequest mLocationRequest;
+    private int radiusLocateBusRequest = 1;
+    private boolean busFound = false;
+    private String busDriverKey = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +107,7 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("request_eta");
                 GeoFire geoFire = new GeoFire(reference);
                 geoFire.setLocation(uid, new GeoLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
+               // getDriverLocation();
 
                 etaBtn.setText("Estimating Time...");
             }
@@ -133,8 +140,60 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                 mRequestWait.setText("Requesting...");
             }
         });
+
+        mLocateNearestBus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("studentRequestNearestBus");
+                GeoFire geoFire = new GeoFire(reference);
+                geoFire.setLocation(uid, new GeoLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
+                studentLocation = new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+
+                getNearestBus();
+            }
+        });
     }
 
+    private void getNearestBus(){
+        DatabaseReference nearestBus = FirebaseDatabase.getInstance().getReference().child("driver_available");
+        GeoFire geoFire = new GeoFire(nearestBus);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(studentLocation.latitude, studentLocation.longitude), radiusLocateBusRequest);
+        geoQuery.removeAllListeners();
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                if (!busFound){
+                    busFound = true;
+                    busDriverKey = key;
+                }
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                if (!busFound){
+                    radiusLocateBusRequest++;
+                    getNearestBus();
+                }
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
 
     /**
      * Manipulates the map once available.

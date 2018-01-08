@@ -1,12 +1,15 @@
 package com.example.aditya.bustrack;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +25,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText emailInput;
     private TextInputEditText passwordInput;
     public static final String LOG_TAG = LoginActivity.class.getSimpleName();
-
+    private int bus_num = 0;
     //Firebase utils
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -83,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(LoginActivity.this, DriverMapsActivity.class);
                         startActivity(intent);
                         finish();
-                    }else{
+                    } else {
                         Intent intent = new Intent(LoginActivity.this, StudentMapsActivity.class);
                         startActivity(intent);
                         finish();
@@ -113,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                  * Saving detail of the user in a shared preference file i.e he is driver or not
                  * and will check from that shared pref while logging in!
                  */
-                if (userType.getSelectedItem().toString().equals("Driver")){
+                if (userType.getSelectedItem().toString().equals("Driver")) {
                     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putBoolean(getString(R.string.isDriver), true);
                     editor.commit();
@@ -133,17 +143,20 @@ public class LoginActivity extends AppCompatActivity {
         registerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyBoard();
                 emailInput = (TextInputEditText) emailWrapper.getEditText();
                 passwordInput = (TextInputEditText) passwordWrapper.getEditText();
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
                 String user = userType.getSelectedItem().toString();
-                if (user.equals("Driver")){
+                if (user.equals("Driver")) {
                     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putBoolean(getString(R.string.isDriver), true);
                     editor.commit();
-                }
-                else{
+
+
+
+                } else {
                     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                     editor.remove(getString(R.string.isDriver));
                     editor.commit();
@@ -153,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Sign up error!", Toast.LENGTH_SHORT).show();
                         } else {
                             String user_id = mAuth.getCurrentUser().getUid();
 
