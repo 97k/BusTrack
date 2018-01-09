@@ -7,18 +7,23 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import android.graphics.drawable.AnimationDrawable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +45,9 @@ import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private CoordinatorLayout coordinatorLayout;
+    private AnimationDrawable animationDrawable;
+
     @BindView(R.id.text_input_layout_email)
     TextInputLayout emailWrapper;
     @BindView(R.id.text_input_layout_password)
@@ -48,8 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R.id.sign_up)
-    LinearLayout switchToSignUp;
+
     @BindView(R.id.registerbtn)
     Button registerbtn;
     @BindView(R.id.chooser_spinner)
@@ -80,6 +87,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        // init coordinatorLayout
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_login);
+        // initializing animation drawable by getting background from constraint layout
+        animationDrawable = (AnimationDrawable) coordinatorLayout.getBackground();
+
+        // setting enter fade animation duration to 5 seconds
+        animationDrawable.setEnterFadeDuration(5000);
+
+        // setting exit fade animation duration to 2 seconds
+        animationDrawable.setExitFadeDuration(2000);
+
+
         // overridePendingTransition(R.anim.slide_in_right, R.anim.stay_in_place);
 
         mAuth = FirebaseAuth.getInstance();
@@ -100,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }
+
         };
 
 //        switchToSignUp.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +219,24 @@ public class LoginActivity extends AppCompatActivity {
             InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             view.clearFocus();
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (animationDrawable != null && !animationDrawable.isRunning()) {
+            // start the animation
+            animationDrawable.start();
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (animationDrawable != null && animationDrawable.isRunning()) {
+            // stop the animation
+            animationDrawable.stop();
         }
     }
 }
