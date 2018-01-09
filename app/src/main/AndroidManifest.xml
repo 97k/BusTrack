@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 
     <application
         android:allowBackup="true"
@@ -45,6 +46,12 @@
         <activity
             android:name=".StudentMapsActivity"
             android:label="@string/title_activity_student_maps"></activity>
+
+        <receiver android:name=".CallReceiver">
+            <intent-filter android:priority="10">
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
