@@ -46,6 +46,8 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="student_maps_first_time_launch">student_maps_first_time_launch</string>
     <string name="bus_no">bus_no</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="cancel">Cancel</string>
 
 
     <string-array name="bus_numbers">
