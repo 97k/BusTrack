@@ -3,11 +3,13 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/link_bus"
-            android:title="@string/Link_bus" />
+            android:title="@string/Link_bus"
+            android:icon="@mipmap/ic_directions_bus_black_24dp"/>
 
         <item
             android:id="@+id/logout"
-            android:title="@string/logout" />
+            android:title="@string/logout"
+            android:icon="@mipmap/ic_account_circle_black_24dp"/>
 
     </group>
 </menu>

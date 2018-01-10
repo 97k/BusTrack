@@ -1,13 +1,18 @@
 package com.example.aditya.bustrack;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.util.Log;
@@ -79,6 +84,37 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo nInfo = cm.getActiveNetworkInfo();
+        if(nInfo != null && nInfo.isConnected()){
+
+        }
+        else {
+            AlertDialog.Builder a_builder = new AlertDialog.Builder(LoginActivity.this) ;
+            a_builder.setMessage("Please enable internet connection !!!")
+                    .setCancelable(false)
+                    .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                            Intent in = new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS  );
+                            startActivity(in);
+
+                        }
+                    } )
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            AlertDialog alert = a_builder.create();
+            alert.setTitle("No Internet Connection");
+            alert.show();
+        }
+
+
         // init coordinatorLayout
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_login);
         // initializing animation drawable by getting background from constraint layout
@@ -148,8 +184,10 @@ public class LoginActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful())
-                            Toast.makeText(LoginActivity.this, "Sign in error", Toast.LENGTH_SHORT).show();
+                        if (!task.isSuccessful()){
+                           Toast.makeText(LoginActivity.this ,"Sign in error!" ,Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
             }
@@ -197,6 +235,9 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+
+
+
     }
 
     @Override
