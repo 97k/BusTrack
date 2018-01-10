@@ -103,18 +103,6 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         super.onCreate(savedInstanceState);
 
         //First check if GPS is enabled
-
-//        int off = 0;
-//        try {
-//            off = Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE);
-//            if(off==0){
-//                // If not send an intent to location services
-//                Intent onGPS = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                startActivity(onGPS);
-//            }
-//        } catch (Settings.SettingNotFoundException e) {
-//            e.printStackTrace();
-//        }
         turnGPSOn();
 
 
