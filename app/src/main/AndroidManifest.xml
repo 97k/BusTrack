@@ -41,10 +41,12 @@
 
         <activity
             android:name=".DriverMapsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/title_activity_driver_maps" />
         <activity
             android:name=".StudentMapsActivity"
-            android:label="@string/title_activity_student_maps"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/title_activity_student_maps"/>
     </application>
 
 </manifest>
