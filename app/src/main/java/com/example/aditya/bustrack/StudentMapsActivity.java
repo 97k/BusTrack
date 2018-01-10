@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -90,6 +91,7 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
     private boolean driverFound = false;
     private SharedPreferences prefs;
     private Marker mBusMarker;
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +165,15 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
             AlertDialog dialog = metadialogBuilder.create();
             dialog.show();
             Log.e(LOG_TAG, "Bus number selected by user is : " + bus_num);
+
+            locateBus = (FloatingActionButton) findViewById(R.id.locate_bus_fab);
+                       locateBus.setImageResource(R.drawable.activity);
+            //
         }
+        spinner=findViewById(R.id.progressBar1);
+                spinner.setVisibility(View.GONE);
+                spinner.getLayoutParams().height = 30;
+
 //
 //        mLocateNearestBus.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -177,6 +187,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
 //                getNearestBus();
 //            }
 //        });
+
+
         locateBus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,6 +248,7 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                             Toast.makeText(StudentMapsActivity.this, "Please link your bus first!", Toast.LENGTH_LONG).show();
                             break;
                         }
+                        spinner.setVisibility(View.VISIBLE);
                         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("request_wait");
                         GeoFire geofire = new GeoFire(ref);
@@ -276,6 +289,7 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                                     geofire.setLocation(studentId, new GeoLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
                                     return;
                                 }
+                                spinner.setVisibility(View.GONE);
                             }
 
                             @Override

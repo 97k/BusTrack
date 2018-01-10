@@ -5,10 +5,9 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:background="@drawable/drawable_gradient_animation_list"
-    tools:context="com.example.aditya.bustrack.LoginActivity"
-    >
+    android:padding="10dp"
+    tools:context="com.example.aditya.bustrack.LoginActivity">
 
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -32,15 +31,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="92dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:src="@drawable/logo" />
+                android:layout_marginBottom="4dp"
+                android:contentDescription="@string/LOGO"
+                android:src="@drawable/login" />/>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/text_input_layout_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
                 android:layout_marginTop="25dp"
+                android:paddingBottom="8dp"
                 android:paddingTop="@dimen/padding_large"
                 android:textColorHint="@color/colorAccent">
 
@@ -111,15 +111,7 @@
 
                 android:textColor="@color/colorPrimary" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/padding_large"
-                android:visibility="gone"
-                tools:visibility="visible" />
+
 
 
         </LinearLayout>

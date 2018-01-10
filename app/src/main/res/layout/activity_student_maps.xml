@@ -29,14 +29,25 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/locate_bus_fab"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="72dp"
-                android:layout_marginEnd="16dp"
-                android:background="@color/colorAccent"
-                android:tooltipText="LB"
-                app:rippleColor="@color/colorPrimaryDark" />
+                android:background="@color/white"
+                android:layout_marginRight="4dp"
+             />
+            <ProgressBar
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            android:theme="@style/HorizontalProgress"
+                            android:layout_marginLeft="120dp"
+                            android:layout_marginRight="120dp"
+                            android:layout_gravity="bottom"
+                            android:layout_marginTop="57dp"
+                            android:layout_marginBottom="30dp"
+                            android:id="@+id/progressBar1" />
 
         </FrameLayout>
 
@@ -51,5 +62,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/student_drawer" />
+
 
 </android.support.v4.widget.DrawerLayout>

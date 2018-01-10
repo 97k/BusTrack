@@ -15,4 +15,14 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="AppTheme_Dark_Dialog" parent="Theme.AppCompat.Dialog">
+                <item name="colorAccent">#FFFFFF</item>
+                <item name="android:textColorPrimary">#CCCCCC</item>
+                <item name="android:background">#E43F3F</item>
+            </style>
+
+        <style name="HorizontalProgress" parent="Theme.AppCompat.Light">
+            <item name="colorAccent">@color/gray</item>
+        </style>
+
 </resources>
