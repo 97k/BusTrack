@@ -34,6 +34,8 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="72dp"
                 android:background="@color/white"
+                android:src="@drawable/activity"
+                app:backgroundTint="@color/white"
                 android:layout_marginRight="4dp"
              />
             <ProgressBar
