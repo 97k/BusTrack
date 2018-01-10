@@ -39,5 +39,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.0+'
     compile 'com.android.support:support-compat:27.0.2'
     compile 'com.firebase:geofire-android:2.2.0'
+    compile 'com.google.firebase:firebase-messaging:11.0+'
 }
 apply plugin: 'com.google.gms.google-services'
