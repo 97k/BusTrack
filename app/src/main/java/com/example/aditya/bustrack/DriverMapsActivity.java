@@ -74,11 +74,6 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         if (mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
         super.onStop();
-
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("driver_available");
-        GeoFire geoFire = new GeoFire(reference);
-        geoFire.removeLocation(uid);
     }
 
     @Override
@@ -107,9 +102,9 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         setContentView(R.layout.activity_driver_maps);
 
         ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
         // Toolbar :: Transparent
         mToolbar.setBackgroundColor(Color.TRANSPARENT);
+        setSupportActionBar(mToolbar);
 //
 //        setSupportActionBar(toolbar);
 
@@ -129,6 +124,7 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -179,7 +175,6 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
                 break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
-
                 SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                 editor.remove(getString(R.string.isDriver));
                 editor.commit();
@@ -216,6 +211,16 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         mMap.setMyLocationEnabled(true);
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("driver_available");
+        GeoFire geoFire = new GeoFire(reference);
+        geoFire.removeLocation(uid);
+    }
 
     @Override
     public void onLocationChanged(Location location) {

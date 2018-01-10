@@ -4,6 +4,9 @@
         <item
             android:id="@+id/eta"
             android:title="@string/get_eta" />
+        <item
+            android:id="@+id/link_bus"
+            android:title="@string/Link_bus" />
 
         <item
             android:id="@+id/request_wait"
