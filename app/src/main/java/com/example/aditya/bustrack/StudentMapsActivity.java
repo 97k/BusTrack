@@ -166,10 +166,14 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
             dialog.show();
             Log.e(LOG_TAG, "Bus number selected by user is : " + bus_num);
 
-            locateBus = (FloatingActionButton) findViewById(R.id.locate_bus_fab);
-                       locateBus.setImageResource(R.drawable.activity);
+
             //
         }
+
+        locateBus = (FloatingActionButton) findViewById(R.id.locate_bus_fab);
+//        locateBus.setBackgroundColor(getResources().getColor(R.color.white));
+//        locateBus.setImageResource(R.drawable.activity);
+
         spinner=findViewById(R.id.progressBar1);
                 spinner.setVisibility(View.GONE);
                 spinner.getLayoutParams().height = 30;
