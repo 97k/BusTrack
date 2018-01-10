@@ -4,34 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@drawable/drawable_gradient_animation_list"
+    tools:context="com.example.aditya.bustrack.LoginActivity"
+    >
 
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         android:clipToPadding="false"
-        android:padding="4dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="56dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="92dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/logo" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/text_input_layout_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                android:textColorHint="@color/colorAccent"
-                android:paddingTop="@dimen/padding_large">
+                android:layout_marginTop="25dp"
+                android:paddingTop="@dimen/padding_large"
+                android:textColorHint="@color/colorAccent">
 
                 <android.support.design.widget.TextInputEditText
+                    android:id="@+id/usrname_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/usrname_et"
                     android:hint="@string/username"
                     android:inputType="textEmailAddress" />
             </android.support.design.widget.TextInputLayout>
@@ -41,14 +57,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_large"
-                app:passwordToggleEnabled="true"
                 android:textColorHint="@color/colorAccent"
+                app:passwordToggleEnabled="true"
                 app:passwordToggleTint="@color/colorAccent">
 
                 <android.support.design.widget.TextInputEditText
+                    android:id="@+id/password_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/password_et"
                     android:hint="@string/password"
                     android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
@@ -61,30 +77,39 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="I am a"/>
+                    android:text="I am a"
+                    android:textSize="20sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
-                    android:layout_width="wrap_content"
+                    android:id="@+id/chooser_spinner"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:entries="@array/choose"
-                    android:id="@+id/chooser_spinner"
-                    android:gravity="end"/>
+                    android:gravity="end" />
             </LinearLayout>
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:background="@color/colorAccent"
                 android:text="@string/login"
-                android:textColor="@android:color/white" />
+
+                android:textColor="@color/colorPrimary" />
 
             <android.support.v7.widget.AppCompatButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/registerbtn"
-                android:text="@string/register"/>
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorAccent"
+                android:text="@string/register"
+
+                android:textColor="@color/colorPrimary" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -96,39 +121,10 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="?android:actionBarSize" />
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
-
-    <LinearLayout
-        android:id="@+id/sign_up"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/colorAccent"
-        android:gravity="center_vertical|center_horizontal"
-        android:minHeight="?android:actionBarSize"
-        android:orientation="horizontal"
-        android:padding="@dimen/layout_margin_small">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/new_here_question"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_extra_large" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/right_arrow"
-            android:padding="@dimen/padding_small"/>
-            <!--app:srcCompat="@drawable/ic_arrow_right_white_24dp" />-->
-    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
