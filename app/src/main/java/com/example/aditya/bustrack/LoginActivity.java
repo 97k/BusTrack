@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
             alert.show();
         }
 
-
+/*
         // init coordinatorLayout
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_login);
         // initializing animation drawable by getting background from constraint layout
@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // setting exit fade animation duration to 2 seconds
         animationDrawable.setExitFadeDuration(2000);
-
+*/
 
         // overridePendingTransition(R.anim.slide_in_right, R.anim.stay_in_place);
 
@@ -167,6 +167,8 @@ public class LoginActivity extends AppCompatActivity {
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
 
+
+
                 /**
                  * Saving detail of the user in a shared preference file i.e he is driver or not
                  * and will check from that shared pref while logging in!
@@ -180,6 +182,9 @@ public class LoginActivity extends AppCompatActivity {
                     editor.remove(getString(R.string.isDriver));
                     editor.commit();
                 }
+
+
+
 
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -203,6 +208,7 @@ public class LoginActivity extends AppCompatActivity {
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
                 String user = userType.getSelectedItem().toString();
+
                 if (user.equals("Driver")) {
                     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putBoolean(getString(R.string.isDriver), true);
