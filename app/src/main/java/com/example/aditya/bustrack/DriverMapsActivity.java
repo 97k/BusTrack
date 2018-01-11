@@ -1,32 +1,41 @@
 package com.example.aditya.bustrack;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.RingtoneManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.provider.Settings;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -39,9 +48,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +78,7 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
 
+
     public static final String LOG_TAG = DriverMapsActivity.class.getSimpleName();
     private static final int RC_PER = 2;
 
@@ -70,6 +88,12 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
     private LocationRequest mLocationRequest;
     private int bus_num;
     private ActionBarDrawerToggle mDrawerToggle;
+    private View mMapView;
+    private String channelId = "my_channel";
+    private String studentId = "";
+    double studentLocationLat = 0;
+    double studentLocationLon = 0;
+    private Marker mStudentMarker;
 
     @Override
     protected void onStop() {
@@ -112,17 +136,16 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
         // Toolbar :: Transparent
         mToolbar.setBackgroundColor(Color.TRANSPARENT);
         setSupportActionBar(mToolbar);
-//
-//        setSupportActionBar(toolbar);
 
-        // Status bar :: Transparent
         Window window = this.getWindow();
+        // Status bar :: Transparent
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(Color.TRANSPARENT);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 
         setupDrawerContent(mNavigationView);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
@@ -132,11 +155,99 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mMapView = mapFragment.getView();
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        Boolean startFromNotification = getIntent().getBooleanExtra(getString(R.string.launched_via_notification), false);
+        if (startFromNotification) {
+
+            Log.e(LOG_TAG, "Launched from notification");
+            //TODO: Application launched from notification and need to be handle effectively.
+            String uId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child("Driver").child(uId);
+
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        studentId = map.get("studentRequest").toString();
+
+
+                        Log.e(LOG_TAG, "Student id is " + studentId);
+
+                        DatabaseReference studentLocation = FirebaseDatabase.getInstance().getReference().child("Users").child("Students").child(studentId).child(studentId).child("l");
+                        studentLocation.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                List<Object> map = (List<Object>) dataSnapshot.getValue();
+                                studentLocationLat = Double.parseDouble(map.get(0).toString());
+                                studentLocationLon = Double.parseDouble(map.get(1).toString());
+                                LatLng studentLatLng = new LatLng(studentLocationLat, studentLocationLon);
+                                if (mStudentMarker!=null) mStudentMarker.remove();
+                                mStudentMarker = mMap.addMarker(new MarkerOptions().position(studentLatLng).title("Here!"));
+                                Log.e(LOG_TAG, "Location of the student is " + map.get(0));
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference requestRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Driver").child(uid);
+        requestRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Toast.makeText(DriverMapsActivity.this, "Request Available!", Toast.LENGTH_LONG).show();
+                CharSequence name = getString(R.string.channel_name);
+                String description = getString(R.string.channel_description);
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(DriverMapsActivity.this, channelId);
+                Intent notificationIntent = new Intent(DriverMapsActivity.this, DriverMapsActivity.class);
+                notificationIntent.putExtra(getString(R.string.launched_via_notification), true);
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(DriverMapsActivity.this);
+                stackBuilder.addParentStack(DriverMapsActivity.this);
+                stackBuilder.addNextIntent(notificationIntent);
+                PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(1,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+                builder.setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setLargeIcon(BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.ic_launcher_foreground))
+                        .setContentTitle(getString(R.string.request_wait_notification))
+                        .setContentText("Tap me to view him/her on the map")
+                        .setContentIntent(notificationPendingIntent)
+                        .setAutoCancel(true)
+                        .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+
+                mNotificationManager.notify(1, builder.build());
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     public void turnGPSOn() {
@@ -196,8 +307,8 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
 
                                 }
                                 String uId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child("driverId");
-                                ref.setValue(uId);
+                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child(uId);
+                                ref.setValue("driver");
                             }
                         });
                 metaDialog.show();
@@ -238,6 +349,12 @@ public class DriverMapsActivity extends AppCompatActivity implements OnMapReadyC
             return;
         }
         mMap.setMyLocationEnabled(true);
+        View locationButton = ((View) mMapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+// position on right bottom
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        rlp.setMargins(0, 0, 30, 60);
     }
 
 

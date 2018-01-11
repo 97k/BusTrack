@@ -4,7 +4,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,16 +13,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="false">
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:fitsSystemWindows="true"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_height="wrap_content">
-            <include layout="@layout/toolbar"/>
-
-        </android.support.design.widget.AppBarLayout>
+        <include layout="@layout/toolbar" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -43,6 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:text="@string/ReadyToGo"
+                android:layout_margin="25dp"
+                           android:background="@color/colorPrimary"
                 />
 
             <Button

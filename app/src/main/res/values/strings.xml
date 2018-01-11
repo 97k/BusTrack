@@ -39,16 +39,20 @@
     <string name="isDriver">is_driver</string>
     <string name="locate_bus">Find nearest bus</string>
     <string name="selectBusTitle">Whats your bus no?</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
+        <string name="LOGO">Logo</string>
     <string name="Link_bus">Link Bus</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="student_maps_first_time_launch">student_maps_first_time_launch</string>
     <string name="bus_no">bus_no</string>
+    <string name="channel_name">channel_01</string>
     <string name="enable_gps">Enable GPS</string>
     <string name="cancel">Cancel</string>
-
+    <string name="channel_description">Notificattion channel for showing notificaiton for waiting reqeust from students.</string>
+    <string name="request_wait_notification">A student nearby is requesting you to wait.</string>
+    <string name="launched_via_notification">launch_via_notification</string>
 
     <string-array name="bus_numbers">
         <item>2</item>
