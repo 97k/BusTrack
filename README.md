@@ -30,5 +30,5 @@ __Snapshot of the Firebase Database(For one college, Similar for another college
 
 ## **Contributing**
 
-All the comtributions are most welcome.
+All the contributions are most welcome.
 
