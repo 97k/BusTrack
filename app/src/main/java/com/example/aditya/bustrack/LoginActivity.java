@@ -1,5 +1,6 @@
 package com.example.aditya.bustrack;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -50,8 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout passwordWrapper;
     @BindView(R.id.btnLogin)
     Button login;
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
+
 
     @BindView(R.id.registerbtn)
     Button registerbtn;
@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     //Firebase utils
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private ProgressDialog mProgress;
 
     @Override
     protected void onStop() {
@@ -114,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
             alert.show();
         }
 
-
+/*
         // init coordinatorLayout
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.activity_login);
         // initializing animation drawable by getting background from constraint layout
@@ -125,7 +126,11 @@ public class LoginActivity extends AppCompatActivity {
 
         // setting exit fade animation duration to 2 seconds
         animationDrawable.setExitFadeDuration(2000);
-
+*/
+        mProgress = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
+                mProgress.setMessage("Authenticating...");
+                mProgress.setCancelable(false);
+               mProgress.setIndeterminate(true);
 
         // overridePendingTransition(R.anim.slide_in_right, R.anim.stay_in_place);
 
@@ -161,11 +166,14 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mProgress.show();
                 hideKeyBoard();
                 emailInput = (TextInputEditText) emailWrapper.getEditText();
                 passwordInput = (TextInputEditText) passwordWrapper.getEditText();
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
+
+
 
                 /**
                  * Saving detail of the user in a shared preference file i.e he is driver or not
@@ -180,6 +188,9 @@ public class LoginActivity extends AppCompatActivity {
                     editor.remove(getString(R.string.isDriver));
                     editor.commit();
                 }
+
+
+
 
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -197,12 +208,14 @@ public class LoginActivity extends AppCompatActivity {
         registerbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mProgress.show();
                 hideKeyBoard();
                 emailInput = (TextInputEditText) emailWrapper.getEditText();
                 passwordInput = (TextInputEditText) passwordWrapper.getEditText();
                 String email = emailInput.getText().toString();
                 String password = passwordInput.getText().toString();
                 String user = userType.getSelectedItem().toString();
+
                 if (user.equals("Driver")) {
                     SharedPreferences.Editor editor = getPreferences(Context.MODE_PRIVATE).edit();
                     editor.putBoolean(getString(R.string.isDriver), true);
@@ -217,6 +230,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
+
                             Toast.makeText(LoginActivity.this, "Sign up error!", Toast.LENGTH_SHORT).show();
                         } else {
                             String user_id = mAuth.getCurrentUser().getUid();

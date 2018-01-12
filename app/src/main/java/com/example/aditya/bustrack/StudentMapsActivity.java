@@ -12,6 +12,7 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -42,6 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -52,6 +56,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +70,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
     DrawerLayout mDrawerLayout;
     @BindView(R.id.nav_view_student)
     NavigationView mNavigationView;
+    @BindView(R.id.locate_bus_fab)
+    FloatingActionButton locateBus;
 
     public static final String LOG_TAG = StudentMapsActivity.class.getSimpleName();
     private static final int RC_PER = 2;
@@ -83,6 +90,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
     private int bus_num;
     private boolean driverFound = false;
     private SharedPreferences prefs;
+    private Marker mBusMarker;
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +154,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                             }
 
                             String uId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child("studentId");
-                            ref.setValue(uId);
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child(uId);
+                            ref.setValue("student");
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putBoolean(getString(R.string.student_maps_first_time_launch), false);
                             editor.putInt(getString(R.string.bus_no), bus_num);
@@ -156,7 +165,19 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
             AlertDialog dialog = metadialogBuilder.create();
             dialog.show();
             Log.e(LOG_TAG, "Bus number selected by user is : " + bus_num);
+
+
+            //
         }
+
+        locateBus = (FloatingActionButton) findViewById(R.id.locate_bus_fab);
+//        locateBus.setBackgroundColor(getResources().getColor(R.color.white));
+//        locateBus.setImageResource(R.drawable.activity);
+
+        spinner=findViewById(R.id.progressBar1);
+                spinner.setVisibility(View.GONE);
+                spinner.getLayoutParams().height = 30;
+
 //
 //        mLocateNearestBus.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -170,6 +191,47 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
 //                getNearestBus();
 //            }
 //        });
+
+
+        locateBus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(StudentMapsActivity.this, "Aye aye captain!", Toast.LENGTH_SHORT).show();
+                if (busDriverKey.isEmpty()){
+                    Toast.makeText(StudentMapsActivity.this, "Sorry, Your driver is not online!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                DatabaseReference busLocation = FirebaseDatabase.getInstance().getReference().child("driver_available").child(busDriverKey).child("l");
+                busLocation.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            List<Object> map = (List<Object>)dataSnapshot.getValue();
+                            double lat = 0;
+                            double lon = 0;
+                            if (map.get(0) != null){
+                                lat = Double.parseDouble(map.get(0).toString());
+                            }
+
+                            if (map.get(1) != null){
+                                lon = Double.parseDouble(map.get(1).toString());
+                            }
+
+                            LatLng busLocation = new LatLng(lat, lon);
+                            if (mBusMarker != null) mBusMarker.remove();
+                            mBusMarker = mMap.addMarker(new MarkerOptions().position(busLocation).title("Your bus here"));
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -186,6 +248,11 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
 
                         break;
                     case R.id.request_wait:
+                        if (prefs.getInt(getString(R.string.bus_no), 0)==0){
+                            Toast.makeText(StudentMapsActivity.this, "Please link your bus first!", Toast.LENGTH_LONG).show();
+                            break;
+                        }
+                        spinner.setVisibility(View.VISIBLE);
                         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("request_wait");
                         GeoFire geofire = new GeoFire(ref);
@@ -213,8 +280,20 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                                     map.put("busDriverID", busDriverKey);
                                     ref.child(userId).updateChildren(map);
                                     Log.e(LOG_TAG, "keyis : " + busDriverKey);
+
+                                    String studentId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users")
+                                            .child("Driver")
+                                            .child(busDriverKey)
+                                            .child("studentRequest");
+                                    driverRef.setValue(studentId);
+
+                                    DatabaseReference locationAdd = FirebaseDatabase.getInstance().getReference().child("Users").child("Students").child(studentId);
+                                    GeoFire geofire = new GeoFire(locationAdd);
+                                    geofire.setLocation(studentId, new GeoLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
                                     return;
                                 }
+                                spinner.setVisibility(View.GONE);
                             }
 
                             @Override
@@ -265,8 +344,8 @@ public class StudentMapsActivity extends AppCompatActivity implements OnMapReady
                                         }
 
                                         String uId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child("studentId");
-                                        ref.setValue(uId);
+                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Buses").child(String.valueOf(bus_num)).child(uId);
+                                        ref.setValue("student");
                                         SharedPreferences.Editor editor = prefs.edit();
                                         editor.putInt(getString(R.string.bus_no), bus_num);
                                         editor.commit();
